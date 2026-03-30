@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>🚀 सुपर AI 200+</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);color:#fff;font-family:Arial;padding:20px}
+h1{text-align:center;color:#0fa}
+.category{background:#1a1a2e;border-radius:10px;padding:10px;margin:15px 0}
+.category h3{color:#fa0}
+.button-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+button{background:#667eea;color:#fff;border:none;padding:10px;border-radius:6px;cursor:pointer}
+.output{background:#0009;border-radius:10px;padding:15px;min-height:200px;font-family:monospace}
+.command-input{display:flex;gap:10px;margin:15px 0}
+input{flex:1;padding:12px;border-radius:8px;border:none;background:#333;color:#fff}
+.send-btn{background:#0a8}
+.clear-btn{background:#dc3545;margin-top:10px;width:100%;padding:10px}
+@media(max-width:600px){.button-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<h1>🚀 सुपर AI इकोसिस्टम 200+</h1>
+
+<div class="category"><h3>📚 एजुकेशन</h3>
+<div class="button-grid">
+<button onclick="add('📚 राजधानी: नई दिल्ली')">राजधानी</button>
+<button onclick="add('📚 गणतंत्र: 26 जनवरी')">गणतंत्र</button>
+<button onclick="add('📚 एवरेस्ट: 8848 मी')">एवरेस्ट</button>
+<button onclick="add('📚 पायथन: प्रोग्रामिंग')">पायथन</button>
+</div></div>
+
+<div class="category"><h3>🏥 हेल्थ</h3>
+<div class="button-grid">
+<button onclick="add('🏥 बुखार: पानी, पैरासिटामोल')">बुखार</button>
+<button onclick="add('🏥 सर्दी: गर्म पानी, अदरक')">सर्दी</button>
+<button onclick="add('🏥 खांसी: शहद, अदरक')">खांसी</button>
+</div></div>
+
+<div class="category"><h3>🌾 एग्री</h3>
+<div class="button-grid">
+<button onclick="add('🌾 गेहूं: अक्टूबर-नवंबर')">गेहूं</button>
+<button onclick="add('🌾 धान: जून-जुलाई')">धान</button>
+<button onclick="add('🌾 टमाटर: 3 महीने')">टमाटर</button>
+</div></div>
+
+<div class="category"><h3>🛰️ मिलिट्री</h3>
+<div class="button-grid">
+<button onclick="add('🛰️ सैटेलाइट: IRNSS')">सैटेलाइट</button>
+<button onclick="add('🚀 रॉकेट लॉन्च')">रॉकेट</button>
+<button onclick="add('💥 मिसाइल हिट')">मिसाइल</button>
+<button onclick="add('🚁 ड्रोन चालू')">ड्रोन</button>
+</div></div>
+
+<div class="category"><h3>🏠 स्मार्ट होम</h3>
+<div class="button-grid">
+<button onclick="add('💡 लाइट ऑन')">लाइट ऑन</button>
+<button onclick="add('💡 लाइट ऑफ')">लाइट ऑफ</button>
+<button onclick="add('❄️ एसी चालू')">एसी</button>
+<button onclick="add('🎵 गाना')">गाना</button>
+</div></div>
+
+<div class="command-input">
+<input id="cmd" placeholder="कमांड लिखें...">
+<button class="send-btn" onclick="send()">🚀 भेजें</button>
+</div>
+<div class="output" id="out">🤖 AI तैयार, कमांडर!</div>
+<button class="clear-btn" onclick="clearOut()">🗑️ साफ</button>
+
+<script>
+let mem={};
+function add(t){let o=document.getElementById('out');o.innerHTML+="\n🤖: "+t;o.scrollTop=o.scrollHeight}
+function send(){let c=document.getElementById('cmd').value.trim();if(c){let o=document.getElementById('out');o.innerHTML+="\n🧑: "+c;let r="",l=c.toLowerCase();
+if(c.includes("सीख")&&c.includes("=")){let p=c.split("=");let k=p[0].replace("सीख","").trim();let v=p[1].trim();mem[k]=v;r="✅ सीखा: "+k+" = "+v}
+else if(c.includes("याद")){let k=c.replace("याद","").trim();r=mem[k]?"🧠 "+mem[k]:"❓ याद नहीं"}
+else if(c.includes("सब याद")){r=Object.keys(mem).length?"📚 "+Object.keys(mem).map(k=>k+"→"+mem[k]).join("\n"):"📭 खाली"}
+else if(l.includes("राजधानी"))r="📚 नई दिल्ली";
+else if(l.includes("बुखार"))r="🏥 पानी पियो, पैरासिटामोल";
+else if(l.includes("सर्दी"))r="🏥 गर्म पानी, अदरक";
+else if(l.includes("गेहूं"))r="🌾 अक्टूबर-नवंबर बोएं";
+else if(l.includes("सैटेलाइट"))r="🛰️ IRNSS सक्रिय";
+else if(l.includes("रॉकेट"))r="🚀 रॉकेट लॉन्च";
+else if(l.includes("लाइट")&&l.includes("ऑन"))r="💡 लाइट ऑन";
+else if(l.includes("गाना"))r="🎵 गाना बज रहा";
+else r="🤔 समझ नहीं आया";
+o.innerHTML+="\n🤖: "+r;document.getElementById('cmd').value="";o.scrollTop=o.scrollHeight}}
+function clearOut(){document.getElementById('out').innerHTML="🤖 AI तैयार, कमांडर!"}
+</script>
+</body>
+</html>
