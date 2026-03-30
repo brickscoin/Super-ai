@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>🚀 AI इकोसिस्टम</title>
+<style>
+body{background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);color:white;font-family:Arial;padding:20px}
+h1{text-align:center;color:#00ffaa}
+.button-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:20px 0}
+button{background:#667eea;color:white;border:none;padding:12px;border-radius:8px}
+.output{background:#000000aa;border-radius:10px;padding:15px;min-height:200px;font-family:monospace}
+.command-input{display:flex;gap:10px;margin:15px 0}
+input{flex:1;padding:12px;border-radius:8px;border:none;background:#333;color:white}
+.send-btn{background:#00aa88}
+</style>
+</head>
+<body>
+<h1>🚀 सुपर AI इकोसिस्टम</h1>
+<div class="button-grid">
+<button onclick="add('🛰️ सैटेलाइट: IRNSS सक्रिय')">🛰️ सैटेलाइट</button>
+<button onclick="add('🚀 रॉकेट लॉन्च! बचे:7')">🚀 रॉकेट</button>
+<button onclick="add('💥 मिसाइल हिट! 94%')">💥 मिसाइल</button>
+<button onclick="add('🚁 ड्रोन: प्रहार-1 चालू')">🚁 ड्रोन</button>
+<button onclick="add('📡 रडार: दुश्मन 10km')">📡 रडार</button>
+<button onclick="add('🏥 बुखार: पानी पियो')">🏥 बुखार</button>
+<button onclick="add('🌾 गेहूं: अक्टूबर-नवंबर बोएं')">🌾 गेहूं</button>
+<button onclick="add('📚 राजधानी: नई दिल्ली')">📚 राजधानी</button>
+<button onclick="add('💡 लाइट ऑन')">💡 लाइट ऑन</button>
+<button onclick="add('🎵 गाना बज रहा')">🎵 गाना</button>
+<button onclick="add('⚔️ युद्ध: विजय!')">⚔️ युद्ध</button>
+<button onclick="add('📊 रॉकेट:7 | मिसाइल:10 | ड्रोन:3')">📊 स्टेटस</button>
+</div>
+<div class="command-input">
+<input id="cmd" placeholder="कमांड लिखें...">
+<button class="send-btn" onclick="send()">🚀 भेजें</button>
+</div>
+<div class="output" id="out">🤖 AI तैयार है, कमांडर!</div>
+<button onclick="document.getElementById('out').innerHTML='🤖 AI तैयार है!'">🗑️ साफ</button>
+<script>
+let m={};
+function add(t){out.innerHTML+="\n🤖: "+t;out.scrollTop=out.scrollHeight}
+function send(){let c=cmd.value.trim();if(c){out.innerHTML+="\n🧑: "+c;let r="";if(c.includes("सीख")&&c.includes("=")){let p=c.split("=");let k=p[0].replace("सीख","").trim();let v=p[1].trim();m[k]=v;r="✅ सीखा: "+k+" = "+v}else if(c.includes("याद")){let k=c.replace("याद","").trim();r=m[k]? "🧠 "+m[k]:"❓ याद नहीं"}else if(c.includes("सब याद")){r=Object.keys(m).length? "📚 "+Object.keys(m).map(k=>k+"→"+m[k]).join("\n"):"📭 खाली"}else if(c.includes("सैटेलाइट"))r="🛰️ IRNSS सक्रिय";else if(c.includes("रॉकेट"))r="🚀 रॉकेट लॉन्च";else if(c.includes("मिसाइल"))r="💥 मिसाइल हिट";else if(c.includes("ड्रोन"))r="🚁 ड्रोन चालू";else if(c.includes("रडार"))r="📡 दुश्मन 10km";else if(c.includes("बुखार"))r="🏥 पानी पियो";else if(c.includes("गेहूं"))r="🌾 अक्टूबर-नवंबर";else if(c.includes("राजधानी"))r="📚 नई दिल्ली";else if(c.includes("लाइट")&&c.includes("ऑन"))r="💡 लाइट ऑन";else if(c.includes("गाना"))r="🎵 गाना बज रहा";else if(c.includes("युद्ध"))r="⚔️ विजय!";else r="🤔 समझ नहीं आया";out.innerHTML+="\n🤖: "+r;cmd.value="";out.scrollTop=out.scrollHeight}}
+</script>
+</body>
+</html>
