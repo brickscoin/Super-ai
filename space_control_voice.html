@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>🎤 स्पेस कंट्रोल सेंटर - वॉयस कंट्रोल</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        background: linear-gradient(135deg, #0a0a2a, #000);
+        color: white;
+        font-family: 'Segoe UI', Arial;
+        padding: 20px;
+    }
+    h1 { text-align: center; color: #ffaa44; text-shadow: 0 0 10px #ffaa44; margin-bottom: 10px; }
+    .subtitle { text-align: center; color: #88aaff; margin-bottom: 20px; font-size: 14px; }
+    .voice-bar {
+        background: #1a1a2e;
+        border-radius: 50px;
+        padding: 15px;
+        margin-bottom: 20px;
+        text-align: center;
+        border: 1px solid #ffaa44;
+    }
+    .mic-btn {
+        background: #ff3333;
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 50px;
+        font-size: 18px;
+        cursor: pointer;
+        margin: 5px;
+    }
+    .mic-btn.listening { background: #00aa88; animation: pulse 1s infinite; }
+    @keyframes pulse {
+        0% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.05); opacity: 0.8; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+    .command-status {
+        background: #000000aa;
+        border-radius: 10px;
+        padding: 10px;
+        margin: 10px 0;
+        font-size: 14px;
+    }
+    .tab-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .tab-btn {
+        background: #1a1a2e; border: none; color: white; padding: 12px 25px;
+        border-radius: 30px; cursor: pointer; font-size: 16px; transition: all 0.3s;
+    }
+    .tab-btn.active { background: #ffaa44; color: #000; box-shadow: 0 0 15px #ffaa44; }
+    .tab-content { display: none; background: rgba(0,0,0,0.5); border-radius: 20px; padding: 20px; border: 1px solid #ffaa44; }
+    .tab-content.active { display: block; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 15px 0; }
+    .card { background: #1a1a2e; border-radius: 12px; padding: 15px; text-align: center; }
+    .value { font-size: 22px; font-weight: bold; }
+    .normal { color: #0f0; }
+    .warning { color: #ff0; }
+    .danger { color: #f00; animation: blink 1s infinite; }
+    @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+    button {
+        background: #ffaa44; color: #000; border: none; padding: 10px 20px;
+        border-radius: 8px; cursor: pointer; margin: 5px; font-weight: bold;
+    }
+    button:hover { transform: scale(1.02); }
+    .repair-btn { background: #00aa88; color: white; }
+    .output {
+        background: #000000aa; border-radius: 10px; padding: 15px;
+        min-height: 120px; font-family: monospace; font-size: 12px; margin-top: 15px;
+    }
+    .footer { text-align: center; font-size: 11px; margin-top: 20px; color: #888; }
+    @media (max-width: 700px) { .grid-3 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<h1>🚀 स्पेस कंट्रोल सेंटर <span style="background:#ff3333; padding:2px 10px; border-radius:20px; font-size:12px;">🎤 वॉयस कंट्रोल</span></h1>
+<div class="subtitle">🛰️ सैटेलाइट | 🚀 रॉकेट | 🌕 चांद डेटा सेंटर</div>
+
+<div class="voice-bar">
+    🎤 <strong>वॉयस कमांड</strong> — बोलो और AI सुनेगा!
+    <div>
+        <button class="mic-btn" id="micBtn" onclick="startVoiceRecognition()">🎤 बोलें</button>
+    </div>
+    <div class="command-status" id="voiceStatus">⚡ माइक पर क्लिक करें और बोलें</div>
+</div>
+
+<div class="tab-bar">
+    <button class="tab-btn active" onclick="showTab('satellite')">🛰️ सैटेलाइट</button>
+    <button class="tab-btn" onclick="showTab('rocket')">🚀 रॉकेट</button>
+    <button class="tab-btn" onclick="showTab('moon')">🌕 चांद</button>
+</div>
+
+<div id="satellite" class="tab-content active">
+    <h3>🛰️ सैटेलाइट मॉनिटरिंग</h3>
+    <div class="grid-3" id="satSensors"></div>
+    <div id="satAlerts"></div>
+    <div>
+        <button onclick="fetchRealData()">🌐 असली डेटा लोड करें</button>
+        <button class="repair-btn" onclick="repairSatellite()">🔧 ऑटो रिपेयर</button>
+        <button onclick="simulateSatDamage()">⚠️ सिमुलेट डैमेज</button>
+    </div>
+    <div class="output" id="satOutput">🛰️ सैटेलाइट मॉनिटर तैयार</div>
+</div>
+
+<div id="rocket" class="tab-content">
+    <h3>🚀 रॉकेट ऑटो-पायलट</h3>
+    <div class="grid-3" id="rocketTelemetry"></div>
+    <div id="rocketStatus"></div>
+    <div>
+        <button onclick="startRocketLaunch()">🚀 लॉन्च करें</button>
+        <button class="repair-btn" onclick="startRocketDocking()">🛰️ स्पेस डॉकिंग</button>
+        <button onclick="abortRocketMission()">🛑 मिशन अबॉर्ट</button>
+    </div>
+    <div class="output" id="rocketOutput">🚀 रॉकेट ऑटो-पायलट तैयार</div>
+</div>
+
+<div id="moon" class="tab-content">
+    <h3>🌕 चांद डेटा सेंटर</h3>
+    <div class="grid-3" id="moonServers"></div>
+    <div class="grid-3" id="moonEnergy"></div>
+    <div>
+        <button onclick="refreshMoon()">🔄 रिफ्रेश</button>
+        <button class="repair-btn" onclick="repairMoon()">🔧 ऑटो रिपेयर</button>
+        <button onclick="simulateMoonFailure()">⚠️ सिमुलेट फेलियर</button>
+        <button onclick="sendToEarth()">📡 पृथ्वी को डेटा भेजें</button>
+    </div>
+    <div class="output" id="moonOutput">🌕 चांद डेटा सेंटर तैयार</div>
+</div>
+
+<div class="footer">🎤 वॉयस कमांड: "लॉन्च", "डॉक", "रिपेयर", "स्टेटस", "डेटा भेजें" | 🌐 असली डेटा | 🧠 याददाश्त</div>
+
+<script>
+    const WEATHER_API_KEY = "da4aad79fae248746c58c838255da4cf";
+    
+    let satData = {
+        "तापमान": { val: 25, unit: "°C", min: -50, max: 80, status: "normal", real: false },
+        "मौसम": { val: "साफ", unit: "", status: "normal", real: false },
+        "ह्यूमिडिटी": { val: 60, unit: "%", status: "normal", real: false }
+    };
+    
+    let rocketTele = { height: 0, speed: 0, fuel: 100 };
+    let rocketMission = false;
+    let rocketInterval = null;
+    
+    let moonServers = [
+        { name: "सर्वर-01", temp: 22, status: "normal" },
+        { name: "सर्वर-02", temp: 23, status: "normal" },
+        { name: "सर्वर-03", temp: 21, status: "normal" }
+    ];
+    let moonEnergy = { solar: 85, battery: 92 };
+    
+    let recognition = null;
+    
+    function startVoiceRecognition() {
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            document.getElementById('voiceStatus').innerHTML = '❌ यह ब्राउज़र वॉयस सपोर्ट नहीं करता! Chrome/Firefox उपयोग करें।';
+            return;
+        }
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'hi-IN';
+        recognition.onstart = function() {
+            document.getElementById('micBtn').classList.add('listening');
+            document.getElementById('voiceStatus').innerHTML = '🎤 सुन रहा हूँ... बोलें!';
+        };
+        recognition.onresult = function(event) {
+            let transcript = event.results[0][0].transcript;
+            document.getElementById('voiceStatus').innerHTML = '🗣️ आपने कहा: "' + transcript + '"';
+            processVoiceCommand(transcript.toLowerCase());
+        };
+        recognition.onerror = function(event) {
+            document.getElementById('voiceStatus').innerHTML = '❌ एरर: ' + event.error;
+            document.getElementById('micBtn').classList.remove('listening');
+        };
+        recognition.onend = function() { document.getElementById('micBtn').classList.remove('listening'); };
+        recognition.start();
+    }
+    
+    function processVoiceCommand(cmd) {
+        addOutput('sat', `🎤 वॉयस: "${cmd}"`);
+        if (cmd.includes("लॉन्च")) { startRocketLaunch(); addOutput('rocket', '🎤 वॉयस से लॉन्च!'); }
+        else if (cmd.includes("डॉक")) { startRocketDocking(); addOutput('rocket', '🎤 वॉयस से डॉकिंग!'); }
+        else if (cmd.includes("अबॉर्ट") || cmd.includes("रोको")) { abortRocketMission(); addOutput('rocket', '🎤 वॉयस से अबॉर्ट!'); }
+        else if (cmd.includes("रिपेयर") || cmd.includes("ठीक")) { repairSatellite(); repairMoon(); addOutput('sat', '🎤 वॉयस से रिपेयर!'); }
+        else if (cmd.includes("डेटा") || cmd.includes("भेजो")) { sendToEarth(); addOutput('moon', '🎤 वॉयस से डेटा भेजा!'); }
+        else if (cmd.includes("रिफ्रेश") || cmd.includes("अपडेट")) { refreshMoon(); addOutput('moon', '🎤 वॉयस से रिफ्रेश!'); }
+        else if (cmd.includes("स्टेटस") || cmd.includes("हाल")) { addOutput('sat', `🚀 ऊंचाई:${rocketTele.height}km, गति:${rocketTele.speed}km/h, ईंधन:${rocketTele.fuel}%`); }
+        else { addOutput('sat', `🤔 "${cmd}" समझ नहीं आया। कमांड: लॉन्च, डॉक, रिपेयर, स्टेटस`); }
+    }
+    
+    async function fetchRealData() {
+        addOutput('sat', '🌐 असली डेटा लोड हो रहा...');
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                let lat = pos.coords.latitude.toFixed(4), lon = pos.coords.longitude.toFixed(4);
+                addOutput('sat', `📍 GPS: ${lat}°N, ${lon}°E`);
+                let url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=metric&lang=hi`;
+                try {
+                    let res = await fetch(url), data = await res.json();
+                    if (data.main) {
+                        satData["तापमान"].val = data.main.temp;
+                        satData["ह्यूमिडिटी"].val = data.main.humidity;
+                        let wMap = { "Clear": "☀️ साफ", "Clouds": "☁️ बादल", "Rain": "🌧️ बारिश" };
+                        satData["मौसम"].val = wMap[data.weather[0].main] || data.weather[0].main;
+                        updateSatellite();
+                        addOutput('sat', `✅ ${satData["तापमान"].val}°C, ${satData["मौसम"].val}`);
+                    }
+                } catch(e) { addOutput('sat', `❌ एरर: ${e.message}`); }
+            }, (err) => { addOutput('sat', `⚠️ GPS एरर: ${err.message}`); });
+        } else { addOutput('sat', '⚠️ GPS सपोर्ट नहीं'); }
+    }
+    
+    function updateSatellite() {
+        let html = '';
+        for (let [n, d] of Object.entries(satData)) html += `<div class="card"><div>${n}</div><div class="value">${d.val}${d.unit}</div></div>`;
+        document.getElementById('satSensors').innerHTML = html;
+    }
+    function repairSatellite() { for (let [n, d] of Object.entries(satData)) if (typeof d.val === 'number') { d.val = Math.min(d.max, d.val + 30); d.val = parseFloat(d.val.toFixed(1)); } updateSatellite(); addOutput('sat', '🔧 रिपेयर हुआ'); }
+    function simulateSatDamage() { for (let [n, d] of Object.entries(satData)) if (typeof d.val === 'number') { d.val = Math.max(d.min, d.val - 40); d.status = "danger"; addOutput('sat', `💥 ${n} डैमेज: ${d.val}${d.unit}`); break; } updateSatellite(); }
+    function updateRocket() { document.getElementById('rocketTelemetry').innerHTML = `<div class="card"><div>ऊंचाई</div><div class="value">${rocketTele.height}km</div><div>लक्ष्य:400km</div></div><div class="card"><div>गति</div><div class="value">${rocketTele.speed}km/h</div><div>लक्ष्य:28000km/h</div></div><div class="card"><div>ईंधन</div><div class="value">${rocketTele.fuel}%</div></div>`; }
+    function startRocketLaunch() {
+        if (rocketMission) { addOutput('rocket', '⚠️ पहले से सक्रिय'); return; }
+        rocketMission = true; addOutput('rocket', '🚀 लॉन्च शुरू!');
+        if (rocketInterval) clearInterval(rocketInterval);
+        rocketInterval = setInterval(() => {
+            if (!rocketMission) return;
+            if (rocketTele.height < 400) rocketTele.height += 10;
+            if (rocketTele.speed < 28000) rocketTele.speed += 500;
+            if (rocketTele.fuel > 0) rocketTele.fuel -= 1;
+            updateRocket();
+            if (rocketTele.height >= 400) { clearInterval(rocketInterval); rocketMission = false; addOutput('rocket', '🎉 मिशन सफल! चंद्रमा कक्षा में!'); }
+            else if (rocketTele.fuel <= 0) { clearInterval(rocketInterval); rocketMission = false; addOutput('rocket', '💥 मिशन विफल!'); }
+        }, 500);
+    }
+    function startRocketDocking() { if (rocketTele.height < 380) { addOutput('rocket', '⚠️ पहले चंद्रमा कक्षा पहुंचो!'); return; } addOutput('rocket', '🛰️ डॉकिंग शुरू...'); setTimeout(() => addOutput('rocket', '✅ डॉकिंग सफल!'), 2000); }
+    function abortRocketMission() { if (rocketInterval) clearInterval(rocketInterval); rocketMission = false; addOutput('rocket', '🛑 मिशन अबॉर्ट!'); }
+    function updateMoon() { let sHtml = ''; for (let s of moonServers) sHtml += `<div class="card"><div>${s.name}</div><div>${s.temp}°C</div><div class="${s.status}">${s.status==="normal"?"✅":"⚠️"}</div></div>`; document.getElementById('moonServers').innerHTML = sHtml; document.getElementById('moonEnergy').innerHTML = `<div class="card"><div>🔆 सोलर</div><div class="value">${moonEnergy.solar.toFixed(1)}%</div></div><div class="card"><div>🔋 बैटरी</div><div class="value">${moonEnergy.battery.toFixed(1)}%</div></div>`; }
+    function refreshMoon() { for (let s of moonServers) { s.temp = Math.min(45, Math.max(15, s.temp + (Math.random() - 0.5) * 2)); s.temp = parseFloat(s.temp.toFixed(1)); s.status = s.temp > 35 ? "danger" : (s.temp > 30 ? "warning" : "normal"); } moonEnergy.solar = Math.min(100, Math.max(0, moonEnergy.solar + (Math.random() - 0.5) * 3)); moonEnergy.battery = Math.min(100, Math.max(0, moonEnergy.battery + (Math.random() - 0.5) * 2)); updateMoon(); addOutput('moon', '🔄 रिफ्रेश हुआ'); }
+    function repairMoon() { for (let s of moonServers) if (s.status !== "normal") { s.temp = Math.max(20, s.temp - 5); addOutput('moon', `🔧 ${s.name} रिपेयर: ${s.temp}°C`); } refreshMoon(); }
+    function simulateMoonFailure() { let s = moonServers[Math.floor(Math.random() * moonServers.length)]; s.temp = Math.min(45, s.temp + 12); addOutput('moon', `💥 ${s.name} ओवरहीट: ${s.temp}°C`); refreshMoon(); }
+    function sendToEarth() { addOutput('moon', '📡 पृथ्वी को डेटा भेज रहा...'); setTimeout(() => addOutput('moon', '✅ डेटा पहुंचा!'), 2000); }
+    function showTab(tab) { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById(tab).classList.add('active'); event.target.classList.add('active'); }
+    function addOutput(tab, msg) { let outId = tab === 'sat' ? 'satOutput' : (tab === 'rocket' ? 'rocketOutput' : 'moonOutput'); let out = document.getElementById(outId); out.innerHTML += "\n🤖: " + msg; out.scrollTop = out.scrollHeight; }
+    setInterval(() => { refreshMoon(); updateSatellite(); updateRocket(); }, 10000);
+    updateSatellite(); updateRocket(); updateMoon();
+</script>
+</body>
+</html>
