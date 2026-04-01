@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🎤 वॉयस असिस्टेंट</title>
+<style>
+    body {
+        background: linear-gradient(135deg, #0a0a2a, #000);
+        color: white;
+        font-family: Arial;
+        padding: 20px;
+        text-align: center;
+    }
+    .mic-btn {
+        background: #ff44aa;
+        color: white;
+        border: none;
+        padding: 20px 40px;
+        border-radius: 60px;
+        font-size: 20px;
+        font-weight: bold;
+        cursor: pointer;
+        margin: 20px;
+    }
+    .chat-area {
+        background: #000000aa;
+        border-radius: 20px;
+        padding: 20px;
+        height: 300px;
+        overflow-y: auto;
+        text-align: left;
+        font-family: monospace;
+        margin-top: 20px;
+    }
+    input {
+        padding: 12px;
+        width: 70%;
+        border-radius: 30px;
+        border: none;
+        background: #333;
+        color: white;
+    }
+    button {
+        background: #ffaa44;
+        color: #000;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 30px;
+        cursor: pointer;
+    }
+</style>
+</head>
+<body>
+<h1>🎤 वॉयस असिस्टेंट</h1>
+<p>🎤 बोलो | 💬 टाइप करो</p>
+
+<button class="mic-btn" onclick="startVoice()">🎤 बोलें</button>
+<div id="voiceStatus" style="margin:10px; color:#ffaa44;">⚡ माइक पर क्लिक करें</div>
+
+<input type="text" id="cmdInput" placeholder="कमांड लिखें...">
+<button onclick="sendCmd()">🚀 भेजें</button>
+
+<div class="chat-area" id="chatArea">
+🤖: नमस्ते! मैं वॉयस असिस्टेंट हूँ।<br>
+💡: "गोल्ड", "क्रिप्टो", "नमस्ते" बोलो या लिखो।
+</div>
+
+<script>
+    function addMsg(sender, msg) {
+        let area = document.getElementById('chatArea');
+        let icon = sender === 'user' ? '🧑' : '🤖';
+        area.innerHTML += `<br>${icon}: ${msg}`;
+        area.scrollTop = area.scrollHeight;
+    }
+    
+    function sendCmd() {
+        let inp = document.getElementById('cmdInput');
+        let cmd = inp.value.trim();
+        if(cmd) {
+            addMsg('user', cmd);
+            processCmd(cmd);
+            inp.value = '';
+        }
+    }
+    
+    function processCmd(cmd) {
+        let c = cmd.toLowerCase();
+        let resp = "";
+        
+        if(c.includes("नमस्ते")) resp = "🙏 नमस्ते! कैसे मदद करूँ?";
+        else if(c.includes("गोल्ड")) resp = "🥇 गोल्ड: ₹" + (72000 + Math.random()*1000).toFixed(0);
+        else if(c.includes("क्रिप्टो")) resp = "💰 क्रिप्टो: $" + (67000 + Math.random()*2000).toFixed(0);
+        else resp = "🤔 समझ नहीं आया। 'गोल्ड', 'क्रिप्टो', 'नमस्ते' आज़माओ।";
+        
+        addMsg('ai', resp);
+    }
+    
+    function startVoice() {
+        if(!('webkitSpeechRecognition' in window)) {
+            document.getElementById('voiceStatus').innerHTML = "❌ Chrome/Firefox उपयोग करें";
+            return;
+        }
+        let recog = new webkitSpeechRecognition();
+        recog.lang = 'hi-IN';
+        recog.onstart = () => document.getElementById('voiceStatus').innerHTML = "🎤 सुन रहा हूँ... बोलें";
+        recog.onresult = (e) => {
+            let text = e.results[0][0].transcript;
+            document.getElementById('voiceStatus').innerHTML = `🗣️: ${text}`;
+            addMsg('user', text);
+            processCmd(text);
+        };
+        recog.onerror = () => document.getElementById('voiceStatus').innerHTML = "❌ फिर से try करें";
+        recog.start();
+    }
+    
+    document.getElementById('cmdInput').addEventListener('keypress', (e) => {
+        if(e.key === 'Enter') sendCmd();
+    });
+</script>
+</body>
+</html>
