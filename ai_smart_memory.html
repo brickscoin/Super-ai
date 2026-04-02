@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🤖 THE AI GOLU GAVI GODSE</title>
+<style>
+    body {
+        background: linear-gradient(135deg, #0a0a2a, #000);
+        color: white;
+        font-family: 'Segoe UI', Arial;
+        padding: 20px;
+        text-align: center;
+    }
+    .mic-btn {
+        background: #ff44aa;
+        color: white;
+        border: none;
+        padding: 20px 40px;
+        border-radius: 60px;
+        font-size: 20px;
+        font-weight: bold;
+        cursor: pointer;
+        margin: 20px;
+    }
+    .chat-area {
+        background: #000000aa;
+        border-radius: 20px;
+        padding: 20px;
+        height: 500px;
+        overflow-y: auto;
+        text-align: left;
+        font-family: monospace;
+        font-size: 13px;
+        margin-top: 20px;
+    }
+    input {
+        padding: 12px;
+        width: 70%;
+        border-radius: 30px;
+        border: none;
+        background: #333;
+        color: white;
+        font-size: 14px;
+    }
+    button {
+        background: #ffaa44;
+        color: #000;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    .footer {
+        text-align: center;
+        font-size: 10px;
+        color: #666;
+        margin-top: 15px;
+    }
+</style>
+</head>
+<body>
+<h1>🤖 THE AI GOLU GAVI GODSE</h1>
+<p>🎤 बोलो | 💬 टाइप करो | 🔍 गलत स्पेलिंग भी समझे | 🌍 हर भाषा</p>
+
+<button class="mic-btn" onclick="startVoice()">🎤 बोलें</button>
+<div id="voiceStatus" style="margin:10px; color:#ffaa44;">⚡ माइक पर क्लिक करें</div>
+
+<input type="text" id="cmdInput" placeholder="कुछ भी पूछो... (भारत की राजधानी, What is capital of India)">
+<button onclick="sendCmd()">🚀 भेजें</button>
+
+<div class="chat-area" id="chatArea">
+🤖: नमस्ते कमांडर! मैं THE AI GOLU GAVI GODSE हूँ।<br>
+💡: गलत स्पेलिंग भी समझ जाऊँगा! हर भाषा में जवाब दूंगा!<br>
+📖: "भारत की राजधानी", "What is capital of India", "সीख মেরা নাম = কমাণ্ডার"
+</div>
+<div class="footer">🧠 स्मार्ट मेमोरी | 🔍 फजी मैचिंग | 🌍 हर भाषा | 🎤 वॉयस</div>
+
+<script>
+    let memory = {};
+    let knowledgeBase = {
+        "भारत की राजधानी": "नई दिल्ली",
+        "capital of india": "New Delhi",
+        "ভারতের রাজধানী": "নয়াদিল্লি",
+        "இந்தியாவின் தலைநகரம்": "புது தில்லி",
+        "భారతదేశ రాజధాని": "న్యూఢిల్లీ"
+    };
+    
+    function levenshteinDistance(a, b) {
+        const matrix = [];
+        for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+        for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+        for (let i = 1; i <= b.length; i++) {
+            for (let j = 1; j <= a.length; j++) {
+                const cost = a[j-1] === b[i-1] ? 0 : 1;
+                matrix[i][j] = Math.min(
+                    matrix[i-1][j] + 1,
+                    matrix[i][j-1] + 1,
+                    matrix[i-1][j-1] + cost
+                );
+            }
+        }
+        return matrix[b.length][a.length];
+    }
+    
+    function fuzzyMatch(query, candidates, threshold = 0.7) {
+        let bestMatch = null;
+        let bestScore = 0;
+        for(let candidate of candidates) {
+            let distance = levenshteinDistance(query.toLowerCase(), candidate.toLowerCase());
+            let maxLen = Math.max(query.length, candidate.length);
+            let similarity = 1 - (distance / maxLen);
+            if(similarity > bestScore && similarity > threshold) {
+                bestScore = similarity;
+                bestMatch = candidate;
+            }
+        }
+        return bestMatch;
+    }
+    
+    function addMsg(sender, msg) {
+        let area = document.getElementById('chatArea');
+        let icon = sender === 'user' ? '🧑' : '🤖';
+        area.innerHTML += `<br>${icon}: ${msg}`;
+        area.scrollTop = area.scrollHeight;
+    }
+    
+    function sendCmd() {
+        let inp = document.getElementById('cmdInput');
+        let cmd = inp.value.trim();
+        if(cmd) {
+            addMsg('user', cmd);
+            processCommand(cmd);
+            inp.value = '';
+        }
+    }
+    
+    function processCommand(cmd) {
+        let lower = cmd.toLowerCase();
+        
+        if(lower.includes("सीख") && lower.includes("=")) {
+            let parts = cmd.split("=");
+            let key = parts[0].replace("सीख", "").trim();
+            let val = parts[1].trim();
+            memory[key] = val;
+            addMsg('ai', `✅ सीख लिया! अब मैं "${key}" का जवाब जानता हूँ।`);
+            return;
+        }
+        
+        if(lower.startsWith("याद")) {
+            let key = cmd.replace("याद", "").trim();
+            if(memory[key]) {
+                addMsg('ai', memory[key]);
+                return;
+            }
+            let allKeys = [...Object.keys(memory), ...Object.keys(knowledgeBase)];
+            let matched = fuzzyMatch(key, allKeys);
+            if(matched && memory[matched]) {
+                addMsg('ai', `🔍 "${matched}" → ${memory[matched]}`);
+                return;
+            } else if(matched && knowledgeBase[matched]) {
+                addMsg('ai', `🔍 "${matched}" → ${knowledgeBase[matched]}`);
+                return;
+            }
+            addMsg('ai', `❓ मुझे "${key}" याद नहीं है। 'सीख ${key} = जवाब' बोलकर सिखाओ।`);
+            return;
+        }
+        
+        if(lower === "सब याद") {
+            let result = "📚 मुझे यह सब याद है:\n\n";
+            if(Object.keys(memory).length > 0) {
+                result += "🔹 **सीखी हुई बातें:**\n";
+                for(let k in memory) result += `   • ${k} → ${memory[k]}\n`;
+            }
+            result += "\n🔹 **पहले से ज्ञात बातें:**\n";
+            for(let k in knowledgeBase) result += `   • ${k} → ${knowledgeBase[k]}\n`;
+            addMsg('ai', result);
+            return;
+        }
+        
+        if(knowledgeBase[cmd]) {
+            addMsg('ai', knowledgeBase[cmd]);
+            return;
+        }
+        if(memory[cmd]) {
+            addMsg('ai', memory[cmd]);
+            return;
+        }
+        
+        let allKeys = [...Object.keys(memory), ...Object.keys(knowledgeBase)];
+        let matched = fuzzyMatch(cmd, allKeys);
+        if(matched && memory[matched]) {
+            addMsg('ai', `🔍 "${matched}" → ${memory[matched]}`);
+            return;
+        } else if(matched && knowledgeBase[matched]) {
+            addMsg('ai', `🔍 "${matched}" → ${knowledgeBase[matched]}`);
+            return;
+        }
+        
+        addMsg('ai', `🤔 मुझे "${cmd}" नहीं पता।\n\n📖 तुम मुझे सिखा सकते हो: "सीख ${cmd} = जवाब"`);
+    }
+    
+    function startVoice() {
+        if(!('webkitSpeechRecognition' in window)) {
+            document.getElementById('voiceStatus').innerHTML = "❌ Chrome/Firefox उपयोग करें";
+            return;
+        }
+        let recog = new webkitSpeechRecognition();
+        recog.lang = 'hi-IN';
+        recog.onstart = () => document.getElementById('voiceStatus').innerHTML = "🎤 सुन रहा हूँ... बोलें";
+        recog.onresult = (e) => {
+            let text = e.results[0][0].transcript;
+            document.getElementById('voiceStatus').innerHTML = `🗣️: ${text}`;
+            addMsg('user', text);
+            processCommand(text);
+        };
+        recog.onerror = () => document.getElementById('voiceStatus').innerHTML = "❌ फिर से try करें";
+        recog.start();
+    }
+    
+    document.getElementById('cmdInput').addEventListener('keypress', (e) => {
+        if(e.key === 'Enter') sendCmd();
+    });
+</script>
+</body>
+</html>
